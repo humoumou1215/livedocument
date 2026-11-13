@@ -1,0 +1,3 @@
+<customUI xmlns="http://schemas.microsoft.com/office/2006/01/customui">
+  <ribbon startFromScratch="false"><tabs><tab id="liveDocumentTab" label="Live Document"><group id="bridgeGroup" label="CLI Bridge"><button id="showBridge" label="Connect CLI" size="large" onAction="LiveDocumentConnect" /></group></tab></tabs></ribbon>
+</customUI>

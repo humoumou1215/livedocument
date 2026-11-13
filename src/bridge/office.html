@@ -1,0 +1,6 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Live Document Office Bridge</title><link rel="stylesheet" href="/bridge/panel.css"></head>
+<body data-host="office"><main><h1>Live Document</h1><p>Office.js connection bridge — not an AI chat window.</p>
+<label for="code">One-time pairing code</label><input id="code" inputmode="numeric" maxlength="8" autocomplete="off" placeholder="livedoc pair">
+<div class="actions"><button id="connect">Connect</button><button id="disconnect" disabled>Disconnect</button></div>
+<p id="status" role="status">Starting…</p><aside><strong>Security:</strong> paired CLI clients may run arbitrary JavaScript within this Office add-in page, including document modifications. Pair only trusted local sessions. Office.js uses asynchronous context/run APIs.</aside></main>
+<script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script><script type="module" src="/bridge/panel.js"></script></body></html>

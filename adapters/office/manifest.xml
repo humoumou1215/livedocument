@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="TaskPaneApp">
+  <Id>bc3b1199-521a-4834-9c2b-aa7e1a65eb07</Id>
+  <Version>0.1.0.0</Version>
+  <ProviderName>Live Document</ProviderName>
+  <DefaultLocale>en-US</DefaultLocale>
+  <DisplayName DefaultValue="Live Document CLI Bridge"/>
+  <Description DefaultValue="Local CLI bridge to your active Office document"/>
+  <IconUrl DefaultValue="https://localhost:18765/bridge/office.html"/>
+  <SupportUrl DefaultValue="https://github.com/humoumou1215/livedocument"/>
+  <Hosts><Host Name="Workbook"/><Host Name="Document"/><Host Name="Presentation"/></Hosts>
+  <DefaultSettings><SourceLocation DefaultValue="https://localhost:18765/bridge/office.html"/></DefaultSettings>
+  <Permissions>ReadWriteDocument</Permissions>
+</OfficeApp>
