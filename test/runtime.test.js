@@ -118,3 +118,32 @@ test('CLI status, targets and exec through real child process',async t=>{
   const fail=await run(['exec','--target','bogus','--code','return 1']);
   assert.equal(fail.code,1);assert.match(fail.err,/TARGET_NOT_FOUND/);
 });
+
+import {updateWpsPublishXml,writeWpsPublish,wpsAddonDirectory} from '../src/wps-install.js';
+import {readFile} from 'node:fs/promises';
+
+test('WPS installer is additive, idempotent, reversible, and backs up publish.xml',async t=>{
+  const dir=await mkdtemp(path.join(os.tmpdir(),'livedoc-wps-test-'));
+  t.after(()=>rm(dir,{recursive:true,force:true}));
+  const url='http://127.0.0.1:18765/wps-addon/';
+  const original='<?xml version="1.0"?><jsplugins><jspluginonline name="Another" type="et" url="https://example.com/"/></jsplugins>';
+  await (await import('node:fs/promises')).writeFile(path.join(dir,'publish.xml'),original);
+  const dry=await writeWpsPublish({directory:dir,baseUrl:url,dryRun:true});
+  assert.equal(dry.changed,true);assert.match(dry.preview,/Another/);
+  assert.match(dry.preview,/LiveDocumentWriter/);assert.equal(await readFile(path.join(dir,'publish.xml'),'utf8'),original);
+  const installed=await writeWpsPublish({directory:dir,baseUrl:url});
+  assert.ok(installed.backup);assert.equal(await readFile(installed.backup,'utf8'),original);
+  const once=await readFile(installed.file,'utf8');
+  assert.equal((once.match(/LiveDocument/g)||[]).length,3);
+  const twice=await writeWpsPublish({directory:dir,baseUrl:url});
+  assert.equal(twice.changed,false);
+  await writeWpsPublish({directory:dir,baseUrl:url,action:'uninstall'});
+  const result=await readFile(installed.file,'utf8');
+  assert.match(result,/Another/);assert.doesNotMatch(result,/LiveDocument/);
+});
+
+test('WPS publish XML validation fails closed',()=>{
+  assert.throws(()=>updateWpsPublishXml('<foo/>','http://localhost:18765/wps-addon/'),/Unrecognized/);
+  assert.throws(()=>updateWpsPublishXml(null,'https://evil.example/wps-addon/'),/local/);
+  assert.ok(wpsAddonDirectory('win32',{APPDATA:'C:\\Users\\A\\AppData\\Roaming'},'/unused').includes('jsaddons'));
+});

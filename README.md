@@ -35,6 +35,8 @@ livedoc status
 livedoc pair       # prints 8-digit code valid for 120 seconds
 ```
 
+For WPS, run `livedoc wps install --dry-run` to inspect the changes, then `livedoc wps install` and restart WPS. The installer preserves other entries and backs up any existing `publish.xml`; `livedoc wps uninstall` removes only the entries it added.
+
 Then open the appropriate host bridge **from within the Office application**, enter the code, and click Connect. See [WPS setup](docs/WPS.md) and [Office setup](docs/OFFICE.md). Merely opening the page in a normal browser will **not** give it WPS or Office API access.
 
 ```sh
@@ -73,7 +75,7 @@ Scripts are the **body of an async function** executed inside the paired host. U
 ## Not yet production complete
 
 - No verified WPS 2016 / WPS 2026 / UOS / Microsoft Office WebView end-to-end host test. Some older embedded browser engines may not support JavaScript modules, async functions, or `fetch`.
-- No installer / auto-update / signed binaries; WPS official `publish.xml` deployment flow is not automated.
+- No signed binaries / auto-update; WPS `publish.xml` registration is automated but **not yet verified in real WPS hosts**. The install command edits the WPS configuration on the local machine (backing up any prior file).
 - Office's manifest expects a locally trusted HTTPS certificate and a working WebView localhost loopback; this is manual (see docs). Office.js CDN is not mirrored.
 - No hard cancellation of host-side JavaScript, per-command confirmation, security sandbox, transaction/undo semantics, or remote-network access.
 - Multiple simultaneously active documents within one Office add-in context require independent pairing; metadata identifies the context on connection, not a permanent file identity.
@@ -86,6 +88,7 @@ Scripts are the **body of an async function** executed inside the paired host. U
 | `LIVEDOC_HOME` | `~/.livedocument` (or `$XDG_RUNTIME_DIR/livedocument`) | state directory |
 | `LIVEDOC_TLS_CERT` | unset | Path to trusted HTTPS certificate (PEM) |
 | `LIVEDOC_TLS_KEY` | unset | Corresponding HTTPS private key (PEM) |
+| `LIVEDOC_WPS_ADDONS_DIR` | platform WPS path | Override WPS `publish.xml` location for custom builds/tests |
 
 For Windows, protect the state directory with your user account's filesystem permissions; POSIX builds set `0700` on the directory and `0600` on the state file. The runtime state token permits full execution requests; do not share it.
 

@@ -5,7 +5,7 @@
   "description": "CLI-first local bridge to active Office documents",
   "type": "module",
   "bin": {"livedoc": "./src/cli.js"},
-  "scripts": {"start": "node src/cli.js serve", "test": "node --test", "check": "node --check src/runtime.js && node --check src/cli.js && node --check src/bridge/client.js && node --check src/bridge/wps.js && node --check src/bridge/office.js"},
+  "scripts": {"start": "node src/cli.js serve", "test": "node --test", "check": "node --check src/runtime.js && node --check src/cli.js && node --check src/wps-install.js && node --check src/bridge/client.js && node --check src/bridge/wps.js && node --check src/bridge/office.js"},
   "engines": {"node": ">=20"},
   "license": "MIT"
 }

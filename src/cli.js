@@ -4,6 +4,7 @@ import {spawn} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {createRuntime} from './runtime.js';
 import {loadState, DEFAULT_PORT} from './settings.js';
+import {writeWpsPublish} from './wps-install.js';
 
 const usage=`Live Document CLI (Node.js 20+)
 Usage:
@@ -12,6 +13,9 @@ Usage:
   livedoc stop                  Stop local runtime
   livedoc status                Runtime status
   livedoc pair                  Generate one-time pairing code for Office bridge
+  livedoc wps install           Register WPS Writer, Spreadsheets and Presentation add-ins
+  livedoc wps uninstall         Remove Live Document WPS registrations only
+  livedoc wps install --dry-run  Show resulting publish.xml without writing
   livedoc targets               List active Office contexts
   livedoc exec --target ID --code 'return Application.Selection.Address'
   livedoc exec --target ID --file script.js [--timeout 30000]
@@ -43,6 +47,12 @@ async function main(){
     const child=spawn(process.execPath,[fileURLToPath(new URL('./cli.js',import.meta.url)),'serve'],{detached:true,stdio:'ignore',env:process.env});child.unref();
     for(let i=0;i<40;i++) {await new Promise(r=>setTimeout(r,100));try{const s=await connect('/v1/status');console.log(JSON.stringify({...s,url:`${process.env.LIVEDOC_TLS_CERT?'https':'http'}://127.0.0.1:${s.port}`}));return;}catch{}}
     throw Error('Runtime did not start; run `livedoc serve` to inspect the error');
+  }
+  if(cmd==='wps') {
+    const action=args[0];if(!['install','uninstall'].includes(action))throw Error('Expected livedoc wps install|uninstall');
+    let url=`http://127.0.0.1:${Number(process.env.LIVEDOC_PORT||DEFAULT_PORT)}/wps-addon/`;
+    try{const st=await loadState();url=`${st.https?'https':'http'}://127.0.0.1:${st.port}/wps-addon/`;}catch{}
+    console.log(JSON.stringify({ok:true,...await writeWpsPublish({action,baseUrl:url,dryRun:args.includes('--dry-run')})}));return;
   }
   if(cmd==='stop'){console.log(JSON.stringify(await connect('/v1/stop','POST',{})));return;}
   if(cmd==='status'){console.log(JSON.stringify(await connect('/v1/status')));return;}
