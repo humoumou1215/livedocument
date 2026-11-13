@@ -40,7 +40,7 @@ export function createRuntime({port=DEFAULT_PORT, env=process.env, host='127.0.0
   }
   function prune() {
     const now=Date.now();
-    for(const t of targets.values()) if(now-t.lastSeen>STALE_MS) drop(t);
+    for(const t of targets.values()) if(now-t.lastSeen>STALE_MS && !t.active) drop(t);
     for(const [k,v] of codes) if(v<now) codes.delete(k);
   }
   function dispatch(t) {
